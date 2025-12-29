@@ -3,129 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Informasi Pertanahan Soreang - Responsive & Detail KET</title>
+    <title>Sistem Informasi Pertanahan Soreang</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         /* Dasar & Reset */
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; height: 100%; background: #f0f2f5; }
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; height: 100%; background: #f0f2f5; overflow: hidden; }
         
-        /* Halaman Login */
+        /* Dashboard Awal dengan CSS Grid */
         #login-page {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 8px;
             height: 100vh;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
             padding: 20px;
             box-sizing: border-box;
         }
 
+        /* Kotak Search (div1) - Posisi Tengah */
         .search-container {
+            grid-column: 3;
+            grid-row: 3;
             background: white;
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             color: #333;
-            width: 100%;
-            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 2;
+            min-width: 320px;
+            align-self: center;
         }
 
-        input { 
-            width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; 
-            border-radius: 6px; box-sizing: border-box; font-size: 1rem;
+        /* Kartu Informasi (div2) - Sebelah kanan Search */
+        .card-sini-weh {
+            grid-column: 4;
+            grid-row: 3;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.8s ease;
+            align-self: center;
         }
 
-        button.btn-akses { 
-            width: 100%; padding: 12px; background: #28a745; color: white; 
-            border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem;
-        }
+        .card-header-warning { background: #ffc107; color: #000; padding: 10px 15px; font-weight: bold; font-size: 0.8rem; }
+        .card-body { padding: 12px; font-size: 0.85rem; line-height: 1.4; }
 
-        /* Halaman Peta & Detail */
-        #map-page { display: none; flex-direction: column; height: 100vh; width: 100%; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Form Styling */
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box; }
+        button.btn-akses { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+
+        /* UI MODAL ERROR */
+        #errorModal {
+            display: none; 
+            position: fixed; 
+            z-index: 9999; 
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            animation: modalSlide 0.4s ease-out;
+            overflow: hidden;
+        }
+        .modal-header { background: #e74c3c; color: white; padding: 20px; font-size: 1.2rem; font-weight: bold; text-align: center; }
+        .modal-body { padding: 25px; color: #333; font-size: 0.95rem; line-height: 1.6; }
+        .modal-footer { padding: 15px; background: #f9f9f9; text-align: center; }
+        .btn-close-modal { background: #e74c3c; color: white; border: none; padding: 10px 30px; border-radius: 5px; cursor: pointer; font-weight: bold; }
         
-        #map-container { position: relative; flex: 1; min-height: 40vh; }
+        @keyframes modalSlide { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Page 2: Map & Detail Card */
+        #map-page { display: none; flex-direction: column; height: 100vh; width: 100%; }
+        #map-container { position: relative; flex: 1; min-height: 45vh; }
         #map { height: 100%; width: 100%; }
 
-        /* Kartu Detail Responsif */
-        #detail-card {
-            background: white;
-            padding: 20px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            border-top: 4px solid #1e3c72;
-            display: grid;
-            gap: 15px;
+        #detail-card { 
+            background: white; 
+            padding: 25px; 
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1); 
+            overflow-y: auto; 
+            display: grid; 
+            gap: 20px; 
             grid-template-columns: 1fr; 
-            max-height: 50vh;
+            height: 40vh; 
         }
 
-        @media (min-width: 768px) {
-            #detail-card { grid-template-columns: repeat(2, 1fr); max-height: 35vh; }
-        }
-        @media (min-width: 1024px) {
-            #detail-card { grid-template-columns: repeat(3, 1fr); }
-        }
+        @media (min-width: 768px) { #detail-card { grid-template-columns: 1fr 1fr; } }
 
-        /* Gaya Khusus untuk Keterangan (KET) agar mencolok */
-        .info-group-ket {
-            grid-column: 1 / -1; /* Mengambil lebar penuh di layar besar */
-            background: #eef2f7;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 5px solid #1e3c72;
+        .info-group h4 { margin: 0 0 15px 0; color: #1e3c72; border-bottom: 2px solid #eee; padding-bottom: 5px; font-size: 1.1rem; }
+        
+        /* PERBAIKAN JARAK DATA */
+        .info-item { margin-bottom: 10px; font-size: 0.95rem; display: flex; align-items: flex-start; }
+        .info-item label { font-weight: bold; color: #666; width: 130px; flex-shrink: 0; position: relative; }
+        .info-item label::after { content: ":"; position: absolute; right: 10px; }
+        .info-item span { color: #333; flex: 1; }
+
+        .info-group-rekomendasi { background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 5px solid #ffc107; color: #856404; }
+        
+        .back-btn { position: absolute; top: 15px; left: 15px; z-index: 1001; padding: 10px 15px; background: white; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.2); border: none; }
+
+        @media (max-width: 1024px) {
+            #login-page { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+            .search-container, .card-sini-weh { width: 100%; max-width: 350px; margin-bottom: 15px; }
         }
-
-        .info-group h4 { margin: 0 0 10px 0; color: #1e3c72; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 1.1rem; }
-        .info-item { margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; border-bottom: 1px solid #fafafa; padding-bottom: 4px; }
-        .info-item label { font-weight: bold; color: #666; padding-right: 10px; }
-        .info-item span { color: #333; text-align: right; font-weight: 500; }
-
-        .back-btn {
-            position: absolute; top: 10px; left: 10px; z-index: 1001;
-            padding: 8px 12px; background: white; border-radius: 5px;
-            cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 0.8rem;
-        }
-
-        .error-msg { color: #dc3545; font-size: 0.85rem; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
     <div id="login-page">
         <div class="search-container">
-            <h2 style="margin-top:0; color:#1e3c72">Akses Data Bidang</h2>
-            <p style="color:#666; font-size:0.9rem">Masukkan NIB Anda untuk melihat butiran lengkap</p>
-            <input type="text" id="nibInput" placeholder="Masukkan NIB (cth: 05796)">
-            <button class="btn-akses" onclick="verifikasiNIB()">Lihat Detail</button>
-            <div id="errorText" class="error-msg"></div>
+            <h2 style="margin-top:0; color:#1e3c72; text-align: center; font-size: 1.3rem;">Sistem Informasi NIB</h2>
+            <input type="text" id="nibInput" placeholder="Masukkan NIB Anda...">
+            <button class="btn-akses" onclick="verifikasiNIB()">Cek Detail & Peta</button>
+        </div>
+
+        <div class="card-sini-weh">
+            <div class="card-header-warning">⚠️ Informasi Penting</div>
+            <div class="card-body">
+                Jika Anda merasa sudah lama tinggal di Soreang namun <b>tidak memiliki NIB</b>, kemungkinan bidang yang Anda tempati merupakan bagian dari <b>Tata Ruang Negara</b> yang tidak dapat diperjualbelikan.
+            </div>
+        </div>
+    </div>
+
+    <div id="errorModal">
+        <div class="modal-content">
+            <div class="modal-header">Pemberitahuan ☹️</div>
+            <div class="modal-body" id="modalErrorMessage"></div>
+            <div class="modal-footer">
+                <button class="btn-close-modal" onclick="closeModal()">Tutup</button>
+            </div>
         </div>
     </div>
 
     <div id="map-page">
         <div id="map-container">
-            <div class="back-btn" onclick="kembaliKeInput()">← Keluar</div>
+            <button class="back-btn" onclick="kembaliKeInput()">← Keluar</button>
             <div id="map"></div>
         </div>
         
         <div id="detail-card">
             <div class="info-group">
-                <h4>Identitas</h4>
+                <h4>Data Properti</h4>
                 <div class="info-item"><label>NIB</label><span id="det-nib">-</span></div>
                 <div class="info-item"><label>Tipe Hak</label><span id="det-tipe">-</span></div>
-            </div>
-            
-            <div class="info-group">
-                <h4>Dimensi & Wilayah</h4>
                 <div class="info-item"><label>Luas</label><span><span id="det-luas">-</span> m²</span></div>
-                <div class="info-item"><label>Kelurahan</label><span id="det-kel">-</span></div>
+                <div class="info-item"><label>Penggunaan</label><span id="det-guna">-</span></div>
             </div>
 
-            <div class="info-group info-group-ket">
-                <h4>Keterangan Bidang (KET)</h4>
-                <div id="det-ket" style="font-size: 0.95rem; line-height: 1.4; color: #333;">-</div>
+            <div class="info-group info-group-rekomendasi">
+                <h4>Rekomendasi & Status</h4>
+                <div id="det-rekomendasi" style="font-size: 0.95rem; line-height: 1.5; font-weight: 500;">
+                    Memproses data...
+                </div>
             </div>
         </div>
     </div>
@@ -135,67 +180,74 @@
 
     <script>
         var map;
-        var currentUserNIB = "";
 
         function verifikasiNIB() {
             var input = document.getElementById('nibInput').value.trim();
-            if (!input) { showError("Sila masukkan NIB!"); return; }
+            if (!input) { showModalError("Silakan masukkan NIB terlebih dahulu!"); return; }
 
-            // Cari data dalam fail data_tanah.js
-            var found = dataSoreang.features.find(f => f.properties.NIB && parseInt(f.properties.NIB) == parseInt(input));
+            var found = dataSoreang.features.find(f => f.properties.NIB && f.properties.NIB.toString() === input);
 
             if (found) {
-                currentUserNIB = input;
                 document.getElementById('login-page').style.display = "none";
                 document.getElementById('map-page').style.display = "flex";
-                
-                isiDetailKartu(found.properties);
-                initLockedMap(found);
+                isiInformasi(found.properties);
+                initNavMap(found);
             } else {
-                showError("Akses Ditolak: NIB tidak ditemui.");
+                showModalError(`
+                    <strong>Yahh NIB Anda belum terdaftar nihh ☹️</strong><br><br>
+                    Kemungkinannya:<br>
+                    <ul style="margin-top:10px; padding-left:20px;">
+                        <li>NIB belum terbit (ditunggu aja ya, nanti juga bakal terbit)</li>
+                        <li>NIB merge atau penyatuan NIB dengan bidang bersebelahan. (jika bukan Anda yang melakukan merge NIB, lakukan pengecekan ke BPN karena kemungkinan ada penyerobotan oleh oknum pihak-pihak tidak bertanggungjawab.)</li>
+                    </ul>
+                `);
             }
         }
 
-        function isiDetailKartu(props) {
-            document.getElementById('det-nib').innerText = props.NIB || "-";
-            document.getElementById('det-tipe').innerText = props.TIPEHAK || "-";
-            document.getElementById('det-luas').innerText = props.LUASTERTUL || "0";
-            document.getElementById('det-kel').innerText = props.KELURAHAN || "-";
-            
-            // Memasukkan data daripada atribut KET
-            document.getElementById('det-ket').innerText = props.KET || "Tiada keterangan tambahan untuk bidang ini.";
+        function showModalError(message) {
+            document.getElementById('modalErrorMessage').innerHTML = message;
+            document.getElementById('errorModal').style.display = "flex";
         }
 
-        function initLockedMap(targetFeature) {
+        function closeModal() { document.getElementById('errorModal').style.display = "none"; }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('errorModal')) { closeModal(); }
+        }
+
+        function isiInformasi(props) {
+            document.getElementById('det-nib').innerText = props.NIB || "-";
+            document.getElementById('det-tipe').innerText = props.TIPEHAK || "Kosong";
+            document.getElementById('det-luas').innerText = props.LUASTERTUL || "0";
+            document.getElementById('det-guna').innerText = props.PENGGUNAAN || "Kosong";
+
+            var ket = props.KET ? props.KET.toLowerCase() : "";
+            var rek = "";
+
+            if (!props.KET || props.KET === "" || props.KET === "-") {
+                rek = "NIB Anda terdaftar resmi dan NOP sesuai.\nANDA PRIBADI YANG TAAT ATURAN. SUATU KEBIASAAN BAIK YANG SUDAH DIMULAI, TETAP DILANJUTKAN YAA❤️😇";
+            } else if (ket.includes("1 nib beberapa nop")) {
+                rek = "NIB Anda terdaftar resmi, namun NOP belum diperbaharui. Anda berpotensi \"Menanggung beban pajak yang bukan kewajiban anda\". Segera lapor ke Kantor BAPENDA untuk pembaruan NOP.\nTAPI KALO ANDA BAIK HATI, KAYA RAYA, RAJIN MENABUNG & TIDAK SOMBONG, SILAHKAN SAJA...GPP🙏";
+            } else if (ket.includes("1 nop beberapa nib")) {
+                rek = "NIB Anda terdaftar resmi, namun NOP belum diperbaharui. Anda berpotensi \"Menanggung beban pajak yang bukan kewajiban anda\", atau justru \"Anda membebani orang lain yang tidak berkewajiban membayar pajak anda\".\nJANGAN KIKIR..., NEGARA HANCUR KARNA ORANG SEPERTI ANDA. JANGAN IKUTI KEBIASAAN OKNUM PEJABAT KORUP YAA😤";
+            } else {
+                rek = props.KET;
+            }
+            document.getElementById('det-rekomendasi').innerHTML = rek;
+        }
+
+        function initNavMap(targetFeature) {
             if (map) map.remove();
-
-            // Peta dikunci (Lock) agar fokus pada bidang
-            map = L.map('map', {
-                dragging: false, scrollWheelZoom: false, zoomControl: false,
-                touchZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false
-            });
-
-            L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-                maxZoom: 20, attribution: 'Google Hybrid'
-            }).addTo(map);
-
-            var layer = L.geoJSON(targetFeature, {
-                style: { color: "yellow", weight: 3, fillOpacity: 0.4 }
-            }).addTo(map);
-
-            map.fitBounds(layer.getBounds(), { padding: [30, 30] });
+            map = L.map('map', { dragging: true, zoomControl: false, scrollWheelZoom: true, touchZoom: true });
+            L.control.zoom({ position: 'topright' }).addTo(map);
+            L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+            var layer = L.geoJSON(targetFeature, { style: { color: "#00ff00", weight: 4, fillOpacity: 0.4 } }).addTo(map);
+            map.fitBounds(layer.getBounds(), { padding: [50, 50] });
         }
 
         function kembaliKeInput() {
             document.getElementById('map-page').style.display = "none";
-            document.getElementById('login-page').style.display = "flex";
-            document.getElementById('nibInput').value = "";
-            if (map) { map.remove(); map = null; }
-        }
-
-        function showError(msg) {
-            var err = document.getElementById('errorText');
-            err.innerText = msg; err.style.display = "block";
+            document.getElementById('login-page').style.display = "grid";
         }
     </script>
 </body>
