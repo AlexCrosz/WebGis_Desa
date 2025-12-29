@@ -7,7 +7,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         /* Dasar & Reset */
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; height: 100%; background: #f0f2f5; overflow: hidden; }
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif; 
+            height: 100%; 
+            background: #f0f2f5; 
+            overflow: hidden; 
+        }
         
         /* Dashboard Awal dengan CSS Grid */
         #login-page {
@@ -16,9 +23,29 @@
             grid-template-rows: repeat(5, 1fr);
             gap: 8px;
             height: 100vh;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             padding: 20px;
             box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Animasi Background */
+        #login-page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: backgroundMove 20s linear infinite;
+        }
+        
+        @keyframes backgroundMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
         }
 
         /* Kotak Search (div1) - Posisi Tengah */
@@ -26,16 +53,50 @@
             grid-column: 3;
             grid-row: 3;
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            padding: 35px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             color: #333;
             display: flex;
             flex-direction: column;
             justify-content: center;
             z-index: 2;
-            min-width: 320px;
+            min-width: 350px;
             align-self: center;
+            animation: slideInUp 0.8s ease-out, floatAnimation 3s ease-in-out infinite;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        @keyframes slideInUp {
+            from { 
+                transform: translateY(50px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
+        }
+        
+        @keyframes floatAnimation {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .search-container h2 {
+            margin: 0 0 10px 0;
+            color: #2c5364;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .search-container p {
+            margin: 0 0 25px 0;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
         }
 
         /* Kartu Informasi (div2) - Sebelah kanan Search */
@@ -43,24 +104,109 @@
             grid-column: 4;
             grid-row: 3;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             overflow: hidden;
             color: #333;
             display: flex;
             flex-direction: column;
-            animation: fadeIn 0.8s ease;
+            animation: slideInRight 0.8s ease-out 0.2s both;
             align-self: center;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        @keyframes slideInRight {
+            from { 
+                transform: translateX(50px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
         }
 
-        .card-header-warning { background: #ffc107; color: #000; padding: 10px 15px; font-weight: bold; font-size: 0.8rem; }
-        .card-body { padding: 12px; font-size: 0.85rem; line-height: 1.4; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card-header-warning { 
+            background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+            color: #000; 
+            padding: 15px 20px; 
+            font-weight: bold; 
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-body { 
+            padding: 20px; 
+            font-size: 0.9rem; 
+            line-height: 1.6;
+            background: #fff9e6;
+        }
 
         /* Form Styling */
-        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box; }
-        button.btn-akses { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        input { 
+            width: 100%; 
+            padding: 15px 20px; 
+            margin-bottom: 15px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #2c5364;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(44, 83, 100, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        button.btn-akses { 
+            width: 100%; 
+            padding: 15px; 
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button.btn-akses::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button.btn-akses:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        button.btn-akses:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(40, 167, 69, 0.4);
+        }
+        
+        button.btn-akses:active {
+            transform: translateY(-1px);
+        }
 
         /* UI MODAL ERROR */
         #errorModal {
@@ -68,59 +214,259 @@
             position: fixed; 
             z-index: 9999; 
             left: 0; top: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            align-items: center; justify-content: center;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            align-items: center; 
+            justify-content: center;
         }
+        
         .modal-content {
             background-color: white;
-            border-radius: 15px;
+            border-radius: 20px;
             width: 90%;
-            max-width: 500px;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
-            animation: modalSlide 0.4s ease-out;
+            max-width: 550px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: modalBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             overflow: hidden;
         }
-        .modal-header { background: #e74c3c; color: white; padding: 20px; font-size: 1.2rem; font-weight: bold; text-align: center; }
-        .modal-body { padding: 25px; color: #333; font-size: 0.95rem; line-height: 1.6; }
-        .modal-footer { padding: 15px; background: #f9f9f9; text-align: center; }
-        .btn-close-modal { background: #e74c3c; color: white; border: none; padding: 10px 30px; border-radius: 5px; cursor: pointer; font-weight: bold; }
         
-        @keyframes modalSlide { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* Page 2: Map & Detail Card */
-        #map-page { display: none; flex-direction: column; height: 100vh; width: 100%; }
-        #map-container { position: relative; flex: 1; min-height: 45vh; }
-        #map { height: 100%; width: 100%; }
-
-        #detail-card { 
-            background: white; 
+        .modal-header { 
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white; 
             padding: 25px; 
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1); 
-            overflow-y: auto; 
-            display: grid; 
-            gap: 20px; 
-            grid-template-columns: 1fr; 
-            height: 40vh; 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .modal-body { 
+            padding: 30px; 
+            color: #333; 
+            font-size: 1rem; 
+            line-height: 1.7;
+            background: #fff;
+        }
+        
+        .modal-body ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        .modal-body li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .modal-body li::marker {
+            color: #e74c3c;
+        }
+        
+        .modal-footer { 
+            padding: 20px; 
+            background: #f8f9fa; 
+            text-align: center;
+        }
+        
+        .btn-close-modal { 
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white; 
+            border: none; 
+            padding: 12px 40px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-close-modal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        @keyframes modalBounce { 
+            0% { 
+                transform: scale(0.7) translateY(-50px); 
+                opacity: 0; 
+            } 
+            50% { 
+                transform: scale(1.05); 
+            }
+            100% { 
+                transform: scale(1) translateY(0); 
+                opacity: 1; 
+            } 
         }
 
-        @media (min-width: 768px) { #detail-card { grid-template-columns: 1fr 1fr; } }
+        /* Page 2: Map & Detail Card */
+        #map-page { 
+            display: none; 
+            flex-direction: column; 
+            height: 100vh; 
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        
+        #map-container { 
+            position: relative; 
+            flex: 1; 
+            min-height: 45vh;
+        }
+        
+        #map { 
+            height: 100%; 
+            width: 100%; 
+        }
 
-        .info-group h4 { margin: 0 0 15px 0; color: #1e3c72; border-bottom: 2px solid #eee; padding-bottom: 5px; font-size: 1.1rem; }
+        #detail-card { 
+            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+            padding: 30px; 
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.15); 
+            overflow-y: auto; 
+            display: grid; 
+            gap: 25px; 
+            grid-template-columns: 1fr; 
+            height: 40vh;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (min-width: 768px) { 
+            #detail-card { 
+                grid-template-columns: 1fr 1fr; 
+            } 
+        }
+
+        .info-group {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .info-group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .info-group h4 { 
+            margin: 0 0 20px 0; 
+            color: #2c5364;
+            border-bottom: 3px solid #e0e0e0; 
+            padding-bottom: 10px; 
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
         
         /* PERBAIKAN JARAK DATA */
-        .info-item { margin-bottom: 10px; font-size: 0.95rem; display: flex; align-items: flex-start; }
-        .info-item label { font-weight: bold; color: #666; width: 130px; flex-shrink: 0; position: relative; }
-        .info-item label::after { content: ":"; position: absolute; right: 10px; }
-        .info-item span { color: #333; flex: 1; }
-
-        .info-group-rekomendasi { background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 5px solid #ffc107; color: #856404; }
+        .info-item { 
+            margin-bottom: 12px; 
+            font-size: 0.95rem; 
+            display: flex; 
+            align-items: flex-start;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
         
-        .back-btn { position: absolute; top: 15px; left: 15px; z-index: 1001; padding: 10px 15px; background: white; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.2); border: none; }
+        .info-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        .info-item label { 
+            font-weight: 600; 
+            color: #555; 
+            width: 130px; 
+            flex-shrink: 0; 
+            position: relative;
+        }
+        
+        .info-item label::after { 
+            content: ":"; 
+            position: absolute; 
+            right: 10px; 
+        }
+        
+        .info-item span { 
+            color: #2c3e50; 
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .info-group-rekomendasi { 
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            padding: 20px; 
+            border-radius: 15px; 
+            border-left: 5px solid #f39c12;
+            color: #856404;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.1);
+        }
+        
+        .info-group-rekomendasi h4 {
+            color: #f39c12;
+        }
+        
+        .back-btn { 
+            position: absolute; 
+            top: 15px; 
+            left: 15px; 
+            z-index: 1001; 
+            padding: 12px 20px; 
+            background: white;
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2c5364;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            background: #2c5364;
+            color: white;
+        }
 
         @media (max-width: 1024px) {
-            #login-page { display: flex; flex-direction: column; justify-content: center; align-items: center; }
-            .search-container, .card-sini-weh { width: 100%; max-width: 350px; margin-bottom: 15px; }
+            #login-page { 
+                display: flex; 
+                flex-direction: column; 
+                justify-content: center; 
+                align-items: center; 
+            }
+            .search-container, .card-sini-weh { 
+                width: 100%; 
+                max-width: 350px; 
+                margin-bottom: 15px; 
+            }
         }
     </style>
 </head>
@@ -128,13 +474,19 @@
 
     <div id="login-page">
         <div class="search-container">
-            <h2 style="margin-top:0; color:#1e3c72; text-align: center; font-size: 1.3rem;">Sistem Informasi NIB</h2>
-            <input type="text" id="nibInput" placeholder="Masukkan NIB Anda...">
-            <button class="btn-akses" onclick="verifikasiNIB()">Cek Detail & Peta</button>
+            <h2>🏘️ Sistem Informasi NIB</h2>
+            <p>Cek status kepemilikan tanah Anda</p>
+            <input type="text" id="nibInput" placeholder="Masukkan Nomor NIB Anda..." autocomplete="off">
+            <button class="btn-akses" onclick="verifikasiNIB()">
+                <span style="position: relative; z-index: 1;">🔍 Cek Detail & Peta</span>
+            </button>
         </div>
 
         <div class="card-sini-weh">
-            <div class="card-header-warning">⚠️ Informasi Penting</div>
+            <div class="card-header-warning">
+                <span style="font-size: 1.2rem;">⚠️</span>
+                <span>Informasi Penting</span>
+            </div>
             <div class="card-body">
                 Jika Anda merasa sudah lama tinggal di Soreang namun <b>tidak memiliki NIB</b>, kemungkinan bidang yang Anda tempati merupakan bagian dari <b>Tata Ruang Negara</b> yang tidak dapat diperjualbelikan.
             </div>
@@ -143,7 +495,10 @@
 
     <div id="errorModal">
         <div class="modal-content">
-            <div class="modal-header">Pemberitahuan ☹️</div>
+            <div class="modal-header">
+                <span style="font-size: 1.5rem;">⚠️</span>
+                <span>Pemberitahuan</span>
+            </div>
             <div class="modal-body" id="modalErrorMessage"></div>
             <div class="modal-footer">
                 <button class="btn-close-modal" onclick="closeModal()">Tutup</button>
@@ -153,13 +508,16 @@
 
     <div id="map-page">
         <div id="map-container">
-            <button class="back-btn" onclick="kembaliKeInput()">← Keluar</button>
+            <button class="back-btn" onclick="kembaliKeInput()">
+                <span>←</span>
+                <span>Keluar</span>
+            </button>
             <div id="map"></div>
         </div>
         
         <div id="detail-card">
             <div class="info-group">
-                <h4>Data Properti</h4>
+                <h4>📋 Data Properti</h4>
                 <div class="info-item"><label>NIB</label><span id="det-nib">-</span></div>
                 <div class="info-item"><label>Tipe Hak</label><span id="det-tipe">-</span></div>
                 <div class="info-item"><label>Luas</label><span><span id="det-luas">-</span> m²</span></div>
@@ -167,8 +525,8 @@
             </div>
 
             <div class="info-group info-group-rekomendasi">
-                <h4>Rekomendasi & Status</h4>
-                <div id="det-rekomendasi" style="font-size: 0.95rem; line-height: 1.5; font-weight: 500;">
+                <h4>💡 Rekomendasi & Status</h4>
+                <div id="det-rekomendasi" style="font-size: 0.95rem; line-height: 1.7; font-weight: 500;">
                     Memproses data...
                 </div>
             </div>
