@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' https://unpkg.com; 
+        style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; 
+        img-src 'self' data: https://unpkg.com https://mt1.google.com; 
+        font-src 'self' https://fonts.gstatic.com;
+    ">
     <title>Sistem Informasi Objek Pajak Bidang Tanah</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -540,11 +548,27 @@
         var map;
 
         function verifikasiNIB() {
-            var input = document.getElementById('nibInput').value.trim();
-            if (!input) { showModalError("Silakan masukkan NIB terlebih dahulu!"); return; }
+            var rawInput = document.getElementById('nibInput').value.trim();
+    
+            // Security 1: Validasi Karakter (Hanya izinkan angka untuk NIB)
+            // Jika NIB Anda mengandung huruf, gunakan regex: /^[a-zA-Z0-9]+$/
+            if (!/^\d+$/.test(rawInput)) {
+                showModalError("Input tidak valid! Gunakan hanya angka.");
+                return;
+            }
 
+            // Security 2: Limit Panjang Input (Misal NIB tidak mungkin > 20 karakter)
+            if (rawInput.length > 20) {
+                showModalError("Nomor NIB terlalu panjang!");
+                return;
+            }
+
+            // Sanitasi teks untuk mencegah injeksi HTML
+            var input = rawInput.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+            // Lanjutkan pencarian data
             var found = dataSoreang.features.find(f => f.properties.NIB && f.properties.NIB.toString() === input);
-
+            
             if (found) {
                 document.getElementById('login-page').style.display = "none";
                 document.getElementById('map-page').style.display = "flex";
@@ -574,10 +598,10 @@
         }
 
         function isiInformasi(props) {
-            document.getElementById('det-nib').innerText = props.NIB || "-";
-            document.getElementById('det-tipe').innerText = props.TIPEHAK || "Kosong";
-            document.getElementById('det-luas').innerText = props.LUASTERTUL || "0";
-            document.getElementById('det-nop').innerText = props.NOP_1 || "-";
+            document.getElementById('det-nib').textContent = props.NIB || "-";
+            document.getElementById('det-tipe').textContent = props.TIPEHAK || "Kosong";
+            document.getElementById('det-luas').textContent = props.LUASTERTUL || "0";
+            document.getElementById('det-nop').textContent = props.NOP_1 || "-";
 
             var ket = props.KET ? props.KET.toLowerCase() : "";
             var rek = "";
@@ -607,6 +631,20 @@
             document.getElementById('map-page').style.display = "none";
             document.getElementById('login-page').style.display = "grid";
         }
+    </script>
+
+    <script>
+        // Mencegah klik kanan
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Mencegah shortcut keyboard untuk Inspect Element (F12, Ctrl+Shift+I, dll)
+        document.onkeydown = function(e) {
+            if(event.keyCode == 123) return false; // F12
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // View Source
+        };
     </script>
 </body>
 </html>
