@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Informasi Pertanahan Soreang</title>
+    <title>Sistem Informasi Objek Pajak Bidang Tanah</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         /* Dasar & Reset */
@@ -474,8 +474,8 @@
 
     <div id="login-page">
         <div class="search-container">
-            <h2>🏘️ Sistem Informasi NIB</h2>
-            <p>Cek status kepemilikan tanah Anda</p>
+            <h2>🏘️ Sistem Informasi Objek Pajak Bidang Tanah</h2>
+            <p>Cek status NIB dan NOP Anda</p>
             <input type="text" id="nibInput" placeholder="Masukkan Nomor NIB Anda..." autocomplete="off">
             <button class="btn-akses" onclick="verifikasiNIB()">
                 <span style="position: relative; z-index: 1;">🔍 Cek Detail & Peta</span>
@@ -521,7 +521,7 @@
                 <div class="info-item"><label>NIB</label><span id="det-nib">-</span></div>
                 <div class="info-item"><label>Tipe Hak</label><span id="det-tipe">-</span></div>
                 <div class="info-item"><label>Luas</label><span><span id="det-luas">-</span> m²</span></div>
-                <div class="info-item"><label>Penggunaan</label><span id="det-guna">-</span></div>
+                <div class="info-item"><label>NOP</label><span id="det-nop">-</span></div>
             </div>
 
             <div class="info-group info-group-rekomendasi">
@@ -577,7 +577,7 @@
             document.getElementById('det-nib').innerText = props.NIB || "-";
             document.getElementById('det-tipe').innerText = props.TIPEHAK || "Kosong";
             document.getElementById('det-luas').innerText = props.LUASTERTUL || "0";
-            document.getElementById('det-guna').innerText = props.PENGGUNAAN || "Kosong";
+            document.getElementById('det-nop').innerText = props.NOP_1 || "-";
 
             var ket = props.KET ? props.KET.toLowerCase() : "";
             var rek = "";
