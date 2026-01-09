@@ -598,24 +598,57 @@
         }
 
         function isiInformasi(props) {
-            document.getElementById('det-nib').textContent = props.NIB || "-";
-            document.getElementById('det-tipe').textContent = props.TIPEHAK || "Kosong";
-            document.getElementById('det-luas').textContent = props.LUASTERTUL || "0";
-            document.getElementById('det-nop').textContent = props.NOP_1 || "-";
+            const nib = props.NIB || "-";
+            const tipe = props.TIPEHAK || "Kosong";
+            const nop = props.NOP_1 || "";
+            
+            // Format Luas ke Desimal
+            let luasDesimal = parseFloat(props.LUASTERTUL || 0).toFixed(2);
+
+            document.getElementById('det-nib').textContent = nib;
+            document.getElementById('det-tipe').textContent = tipe;
+            document.getElementById('det-luas').textContent = luasDesimal;
+            document.getElementById('det-nop').textContent = nop || "-";
 
             var ket = props.KET ? props.KET.toLowerCase() : "";
             var rek = "";
-
+            
+            // Logika Rekomendasi
             if (!props.KET || props.KET === "" || props.KET === "-") {
-                rek = "NIB Anda terdaftar resmi dan NOP sesuai.\nANDA PRIBADI YANG TAAT ATURAN. SUATU KEBIASAAN BAIK YANG SUDAH DIMULAI, TETAP DILANJUTKAN YAA❤️😇";
+                rek = "NIB Anda terdaftar resmi dan NOP sesuai.";
             } else if (ket.includes("1 nib beberapa nop")) {
-                rek = "NIB Anda terdaftar resmi, namun NOP belum diperbaharui. Anda berpotensi \"Menanggung beban pajak yang bukan kewajiban anda\". Segera lapor ke Kantor BAPENDA untuk pembaruan NOP.\nTAPI KALO ANDA BAIK HATI, KAYA RAYA, RAJIN MENABUNG & TIDAK SOMBONG, SILAHKAN SAJA...GPP🙏";
+                rek = "NIB Anda terdaftar resmi, namun NOP belum diperbaharui.";
             } else if (ket.includes("1 nop beberapa nib")) {
-                rek = "NIB Anda terdaftar resmi, namun NOP belum diperbaharui. Anda berpotensi \"Menanggung beban pajak yang bukan kewajiban anda\", atau justru \"Anda membebani orang lain yang tidak berkewajiban membayar pajak anda\".\nJANGAN KIKIR..., NEGARA HANCUR KARNA ORANG SEPERTI ANDA. JANGAN IKUTI KEBIASAAN OKNUM PEJABAT KORUP YAA😤";
+                rek = "NIB Anda terdaftar resmi, namun NOP belum diperbaharui.";
             } else {
                 rek = props.KET;
             }
+
+            // FITUR SMART LINK: Click to Copy & Redirect
+            if (nop && nop !== "" && nop !== "-") {
+                const cleanNOP = nop.replace(/\s/g, '');
+                
+                rek += `
+                    <div style="margin-top:15px; padding:15px; background:#fff3cd; border-radius:12px; border:2px dashed #f39c12; text-align:center;">
+                        <p style="margin:0 0 10px 0; font-size:0.85rem; color:#856404;">Cek nilai NOP kamu di sini</p>
+                        <button onclick="copyAndGo('${cleanNOP}')" style="background:#e67e22; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; display:flex; align-items:center; justify-content:center; gap:10px;">
+                            🚀 CEK PAJAK SEKARANG
+                        </button>
+                    </div>
+                `;
+            }
+
             document.getElementById('det-rekomendasi').innerHTML = rek;
+        }
+
+        // Fungsi tambahan untuk Copy otomatis
+        function copyAndGo(nop) {
+            // Salin ke clipboard
+            navigator.clipboard.writeText(nop).then(() => {
+                alert("NOMOR NOP BERHASIL DISALIN!\n\nHalaman BAPENDA akan terbuka. Silakan langsung 'PASTE' (Tempel) pada kolom NOP di sana.");
+                // Buka link setelah user klik OK pada alert
+                window.open("https://cekpbb.bandungkab.go.id/", "_blank");
+            });
         }
 
         function initNavMap(targetFeature) {
