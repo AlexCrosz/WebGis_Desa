@@ -528,7 +528,8 @@
                 <h4>📋 Data Properti</h4>
                 <div class="info-item"><label>NIB</label><span id="det-nib">-</span></div>
                 <div class="info-item"><label>Tipe Hak</label><span id="det-tipe">-</span></div>
-                <div class="info-item"><label>Luas</label><span><span id="det-luas">-</span> m²</span></div>
+                <div class="info-item"><label>Luas Tertul</label><span><span id="det-luas">-</span> m²</span></div>
+                <div class="info-item"><label>Luas Peta</label><span><span id="det-luas-peta">-</span> m²</span></div>
                 <div class="info-item"><label>NOP</label><span id="det-nop">-</span></div>
             </div>
 
@@ -601,14 +602,17 @@
             const nib = props.NIB || "-";
             const tipe = props.TIPEHAK || "Kosong";
             const nop = props.NOP_1 || "";
-            
-            // Format Luas ke Desimal
-            let luasDesimal = parseFloat(props.LUASTERTUL || 0).toFixed(2);
+            const luasTertul = props.LUASTERTUL || "0";
+            const luasPeta = props.LUASPETA || "0"; //
 
             document.getElementById('det-nib').textContent = nib;
             document.getElementById('det-tipe').textContent = tipe;
-            document.getElementById('det-luas').textContent = luasDesimal;
+            document.getElementById('det-luas').textContent = luasTertul;
             document.getElementById('det-nop').textContent = nop || "-";
+
+            if(document.getElementById('det-luas-peta')){
+                document.getElementById('det-luas-peta').textContent = luasPeta;
+            }
 
             var ket = props.KET ? props.KET.toLowerCase() : "";
             var rek = "";
@@ -632,7 +636,7 @@
                     <div style="margin-top:15px; padding:15px; background:#fff3cd; border-radius:12px; border:2px dashed #f39c12; text-align:center;">
                         <p style="margin:0 0 10px 0; font-size:0.85rem; color:#856404;">Cek nilai NOP kamu di sini</p>
                         <button onclick="copyAndGo('${cleanNOP}')" style="background:#e67e22; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; display:flex; align-items:center; justify-content:center; gap:10px;">
-                            🚀 CEK PAJAK SEKARANG
+                            🚀 CEK NILAI NOP
                         </button>
                     </div>
                 `;
